@@ -1,8 +1,12 @@
 {
-	"folders": [
-		{
-			"path": "C:\\dev\\angular\\angular1"
-		}
-	],
+    "folders": [
+        {
+            "path": "C:\\dev\\angular\\angular1"
+        },
+        {
+            "path": "C:\\dev\\angular\\angular1\\azure\\funcs",
+            "name": "funcs"
+        }
+    ],
 	"settings": {}
 }

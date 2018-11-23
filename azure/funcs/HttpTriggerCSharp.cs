@@ -7,9 +7,15 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Lambosoft.Functions
 {
+   public class Hero {
+    public int id { get; set; }
+    public string name { get; set; }
+  }
+
     public static class HttpTriggerCSharp
     {
         [FunctionName("HttpTriggerCSharp")]
@@ -25,9 +31,17 @@ namespace Lambosoft.Functions
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
 
+/* 
             return name != null
                 ? (ActionResult)new OkObjectResult($"Hello, {name}")
                 : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+*/
+            var lst=new List<Hero>();
+            lst.Add(new Hero() { id = 1, name = "bli" });
+            lst.Add(new Hero() { id = 2, name = "bla" });
+
+            //return (ActionResult)new OkObjectResult(new Hero() { id = 1, name = "gugugs" });                
+            return (ActionResult)new OkObjectResult(lst);                
         }
     }
 }

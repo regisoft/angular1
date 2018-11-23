@@ -18,8 +18,11 @@ const httpOptions = {
 export class HeroService {
 
   private heroesUrl = 'api/heroes';  // URL to web api
-
-
+/* ----- rest endpoints:
+api/heroes   get,  post,  put,  delete
+api/heroes/99999
+api/heroes/?name=BBBBBB
+*/
 
   //Inject HttpClient into the constructor in a private property called http.
   constructor(
