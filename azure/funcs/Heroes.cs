@@ -13,7 +13,15 @@ namespace Lambosoft.Functions
 {
     //https://markheath.net/post/azure-functions-rest-csharp-bindings
     //https://docs.microsoft.com/en-us/azure/azure-functions/
-    
+
+    //when deployed call it like this:
+    //https://lambosoftfunc.azurewebsites.net/api/hero/99?code=6ySgwBlz9iOmkGvcqeyrYK4tYDRC1LBOUalC/fiKBfJhsQ9JfKSTtw==
+
+
+    //beim client kommt dann wohl...
+    //No 'Access-Control-Allow-Origin' header is present on the requested resource.
+    //...zum beheben: in azure portal unter platfromfeatures .. CORS z.B. folgendes hinzufügen: http://localhost:4200
+
     public class HeroModel
     {
         public int id { get; set; }

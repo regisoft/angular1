@@ -17,7 +17,15 @@ const httpOptions = {
 })
 export class HeroService {
 
-  private heroesUrl = 'api/heroes';  // URL to web api
+  //------1---- MOCK!!!!!
+  //private heroesUrl = 'api/heroes';  // URL to web api... local    in-memory-data.service.ts
+  //private functionKey = "?code=blibla";
+
+  //------2---- REAL!!!!!
+  private heroesUrl = 'https://lambosoftfunc.azurewebsites.net/api/hero';  // URL to web api
+  private functionKey = "?code=6ySgwBlz9iOmkGvcqeyrYK4tYDRC1LBOUalC/fiKBfJhsQ9JfKSTtw==";
+
+
 /* ----- rest endpoints:
 api/heroes   get,  post,  put,  delete
 api/heroes/99999
@@ -34,8 +42,10 @@ api/heroes/?name=BBBBBB
     this.messageService.add('HeroService: fetched heroes');
     //return of(HEROES);
 
+    const url = this.heroesUrl + this.functionKey;
+    this.messageService.add('url: ' + url);
     //All HttpClient methods return an RxJS Observable of something.
-    return this.http.get<Hero[]>(this.heroesUrl)
+    return this.http.get<Hero[]>(url)
       .pipe(
         tap(heroes => this.log('fetched heroes')),
         catchError(this.handleError('getHeroes', []))
@@ -50,7 +60,7 @@ api/heroes/?name=BBBBBB
 
     //return of(HEROES.find(hero => hero.id === id));
 
-    const url = `${this.heroesUrl}/${id}`;
+    const url = `${this.heroesUrl}/${id}`+ this.functionKey;
     return this.http.get<Hero>(url).pipe(
       tap(_ => this.log(`fetched hero id=${id}`)),
       catchError(this.handleError<Hero>(`getHero id=${id}`))
@@ -59,7 +69,7 @@ api/heroes/?name=BBBBBB
 
   /** PUT: update the hero on the server */
   updateHero(hero: Hero): Observable<any> {
-    return this.http.put(this.heroesUrl, hero, httpOptions).pipe(
+    return this.http.put(this.heroesUrl + "/999" + this.functionKey, hero, httpOptions).pipe(
       tap(_ => this.log(`updated hero id=${hero.id}`)),
       catchError(this.handleError<any>('updateHero'))
     );
@@ -68,7 +78,7 @@ api/heroes/?name=BBBBBB
 
   /** POST: add a new hero to the server */
   addHero(hero: Hero): Observable<Hero> {
-    return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
+    return this.http.post<Hero>(this.heroesUrl + this.functionKey, hero, httpOptions).pipe(
       tap((hero: Hero) => this.log(`added hero w/ id=${hero.id}`)),
       catchError(this.handleError<Hero>('addHero'))
     );
@@ -77,7 +87,7 @@ api/heroes/?name=BBBBBB
   /** DELETE: delete the hero from the server */
   deleteHero(hero: Hero | number): Observable<Hero> {
     const id = typeof hero === 'number' ? hero : hero.id;
-    const url = `${this.heroesUrl}/${id}`;
+    const url = `${this.heroesUrl}/${id}${this.functionKey}`;
 
     return this.http.delete<Hero>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted hero id=${id}`)),
@@ -95,7 +105,7 @@ searchHeroes(term: string): Observable<Hero[]> {
     // if not search term, return empty hero array.
     return of([]);
   }
-  return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
+  return this.http.get<Hero[]>(`${this.heroesUrl}${this.functionKey}&name=${term}`).pipe(
     tap(_ => this.log(`found heroes matching "${term}"`)),
     catchError(this.handleError<Hero[]>('searchHeroes', []))
   );

@@ -2,8 +2,6 @@
 //, applying them to an in-memory data store, and returning simulated responses.
 
 //When your server is ready, detach the In-memory Web API, and the app's requests will go through to the server.
-
-
 import { InMemoryDbService } from 'angular-in-memory-web-api';
 import { Hero } from './hero';
 
