@@ -1,0 +1,378 @@
+
+------------------------------------------------------------------------pre requirements
+https://angular.io/tutorial
+https://nodejs.org/en/download/
+
+npm -v
+node -v
+
+npm install npm@latest -g.
+npm audit --help
+
+nvm list
+---bringt nichts
+--dont-- nvm uninstall 4.6.0
+--dont-- nvm install v10.11.0 64
+--dont-- npm install -g npm
+
+npm install
+npm start ... macht    ng serve
+CLI (==ng) is based on Webpack = bundle js, css usw.
+ng serve -sucht-> angular.js -darin-> Main.ts -bootstrapModule-> app_module.ts -darin bootstrap-> app.component.ts (renders the rest)
+
+ng generate component gugus .... you have to put in a declarations in NgModules
+
+
+
+-----------------------basic
+AppModule = component to use as the top-level component (normaly AppComponent)
+
+NgModule = ist auch decorator/metadata für class == wrapper loader für components wie package ... das  declarations darin ist wie header-File
+
+page = application shell = The shell is controlled by an Angular component named AppComponent
+
+template als url oder direkt als string (=keine intellisense..)
+
+@Component == Das "@" is typescript nicht angular und ist in c# annotation for class / decorator function  /   in A-js war component eine direktive / neue Tags für Browser
+selector = custom-html-Tag-Name
+
+Application = tree of Components
+
+
+
+----------------------model
+models in dem unterdordner woe die View ist
+import { Article } from './article.model';
+hat auch funcs wie voteUp()... wird dann auferufen von voteUp der Komponente
+
+
+
+---------------------------input/output
+*ngFor   (war früher ng-repeat)    <li *ngFor="let name of names; let i=index">  <app-user-item [name]="name">
+<app-article *ngFor="let foo of sortedArticles()" [article]="foo"    (onProductSelected)="productWasSelected($event)">   
+ .... [article] ist ein Input() von app-article  ...pass data into child components
+ .... (onProductSelected) ist ein Output() von app-article ...we want to listen to the onProductSelected output from child component
+
+@Input() foo: string;   In TS  == Input annotation == pass data into the child component 
+[foo] In HTML == pass a value to the input named foo on that component
+[class.selected]="isSelected(myProduct)"    ....add the CSS class "selected" if isSelected(myProduct) returns true
+
+
+
+@Output() onProductSelected: EventEmitter<Product>;   In TS
+<button (click)="increase()">   binding the click output of the button  
+prinzipiell:    (output)="action()"
+EventEmitter== an object that helps you implement the Observer Pattern = 1. maintain a list of subscribers 2. publish events to them. / subscribe+emit ... angualr sbscribe selber
+this.onProductSelected.emit(product);
+
+@Output() results: EventEmitter<SearchResult[]> = new EventEmitter<SearchResult[]> ();
+
+| = pipe z.B. uppercase
+{{ = template tags (or sometimes mustache tags interpolation) = property anzeigen
+
+
+[(ngModel)] = 2 way bind ... Sollte heute nicht mehr geamcht werden..
+heute:  one-way data binding. That is, your data flows only down through components. If you need to make changes, you emit events that cause changes to happen “at the top” w
+
+
+
+----------------------binds...
+<form><label for="foo"/><input name="foo" id="title" #newFoo>   ... foo ist ein input tag
+# ist eine template variable... to assign those tags to a local variable
+
+<button (click)="addArticle(newFoo)
+
+anderes Bsp:
+  <input type="text" name="color" value="{{color}}" #colorinput>
+  <button (click)="apply(colorinput.value, fontinput.value)">
+
+<a href (click)="voteDown()">
+ return a boolean value of false (tells the browser not to propagate the event upwards... == not refresh page)
+
+addArticle(title: HTMLInputElement
+
+@HostBinding('attr.class') cssClass = 'row';     host is the element this component is attached to.  we’re able to configure our host element from within the component.
+
+
+
+
+
+-----------------------ts... js-reference
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+tsun ist REPL in command line für TS
+ 
+
+ES6 kann classes und Modules
+ts fügt types und annotations zu ES6 hinzu
+nach build ist alles ES5
+
+backticks `   ist ES6 = multiline strings
+
+private geht auch
+
+this.articles.push(new Article(tit
+articles.sort((a: Article, b: Article) => b.votes - a.votes);   das ist ES6 (Fat arrow functions)... ananyome function lambda 
+
+---geht beides
+var jobs: Array<string> = ['IBM', 'Microsoft', 'Google'];
+var jobs: string[] = ['Apple', 'Dell', 'HP'];
+this.products = [];
+
+ `Hello ${lastName}`; .. das ist TS nicht angular
+
+constructor(obj?: any) {
+  this.id = obj && obj.id || null;
+
+
+-----------------------Built-in Directives
+NgIf
+NgSwitch
+NgStyle
+NgClass
+NgFor
+NgNonBindable ...html.raw
+<pre> tag  für Data oder Code Darstellung
+
+-----------------------Form
+https://angular.io/guide/forms-overview
+
+--FormControl = single input field
+errors, dirty, valid
+
+--FormGroup
+
+ngForm
+man kann auch normales <form> brauchen und submit func holt sich vars aus form
+
+“reactive” Elemente im COntroller zusammenbasteln ...FormBuilder ... hat [formGroup]
+“template” wie gehabt
+
+
+Wenn man FormsModule importiert hängt es sich an jedes <form> tag und gibt
+A FormGroup named ngForm
+2. A (ngSubmit) output
+
+<form #f="ngForm" (ngSubmit)="onSubmit(f.value)"    .... when I submit the form, call onSubmit on my component instance and pass the value of the form as the argument
+onSubmit(form: any): void { ..}
+
+  
+--gross/klein
+NgModel = class, object
+ngModel = selector of the directive
+
+NgModel is the directive that you use in your view
+FormControl is the object used for representing the data and validations in your form
+
+To create a new FormGroup and FormControls implicitly use: • ngForm and • ngModel
+But to bind to an existing FormGroup and FormControls use: • formGroup and • formControl
+
+--ngModel ... creates a new FormControl that is automatically added to the parent FormGroup
+ist special weil 2 way
+ <input type="text" ngModel>  ...ohne weitere Angabe dann one-way
+ [(ngModel)]="productName" ...2 way
+
+ <input type="text" [formControl]="myForm.controls.sku">
+
+
+----------------------DI Dependency Injection
+inject something by creating an argument in the constructor
+share a single instance of the B class across our whole app
+
+export interface IPriceService {...}
+export class MockPriceService implements IPriceService {...}
+constructor(service: IPriceService...
+
+Angualr hat DependencRegistiry
+ specify what is being injected and how it will be resolved
+
+@Injectable() Anotation... before export class...
+
+in NgModule providers: [ UserService    ...dann...     constructor(private userService: UserService)  ...dann verwenden auch ausserhalb contructor...  this.userService.setUser
+Every class that injects the UserService will receive the same singleton... angular kreeirt ihn
+
+providers kann...
+• Inject a (singleton) instance of a class (as we’ve seen)
+• Inject a value ... { provide: 'API_URL', useValue: 'http://my.api.com/v1' }
+• Call any function and inject the return value of that function
+
+Man kann die Injectibales auch auslagern in Klasse  und dann so in NgModule einbinden:   providers: [ youTubeServiceInjectables ]
+
+constructor(   @Inject(YOUTUBE_API_KEY) private apiKey:
+
+-----------------------observable rxjs
+.subscribe(
+        (results: SearchResult[]) => { // on sucesss ... this.loading.emit(false);
+        (err: any) => { // on error
+        () => { // on completion
+        
+        
+
+----------------------build
+ng build --prod
+ng build --target=production --base-href /
+
+
+dann in dist ordner "now"
+https://zeit.co/dashboard
+
+https://dist-5j0b6ivjn.now.sh/
+
+
+
+
+=================================================================================================================================================
+------------------------------------------------------------------------------------------------OLD (mit mafl)
+https://docs.angularjs.org/guide/directive
+http://www.w3schools.com/angular/angular_sql.asp
+https://www.heise.de/developer/artikel/Single-Page-Anwendungen-Framework-unabhaengig-entwickeln-3633930.html
+--------------------------------
+emmet integriert in sublime 
+div#bla.c1.c2 (tab) --->>  <div id="bla" class="c1 c2"></div>
+
+
+
+---- ng-init 
+...solte man nicht mehr brauchen
+initializes application variables.
+ng-init="quantity=1;cost=5"
+
+---- ng-app
+defines the root element.. kann div aber auch body.. sein
+<div ng-app=""></div> macht, dass alles darin z.B: {{...}} überhaupt von angular interpretiert wird 
+
+---- api
+z.B. angular.lowercase($scope.x1);
+
+---- module
+...container für app bestandteile wie controllers
+var app = angular.module('myApp', []);
+erster param zeigt auf ng-app element
+
+
+---- ng-controller
+kontrolliert apps... gehören immer zu einem module
+<div ng-app="myApp" ng-controller="myCtrl"> ... man gibt immer beide an beim element.. wie namespace und class
+app.controller('myCtrl', function($scope, $http)
+dependency == weitere params..z.B: obiges http
+
+/app/ui/ui.controller.js
+eine klasse pro template
+mit freien funcs
+
+
+---- $scope
+the application object
+the binding part between the HTML (view) and the JavaScript (controller)
+ist eingtlich das model
+
+
+---- $rootScope
+app.run(function($rootScope) {.
+
+---- ng-bind == Expressions
+binding an nicht input controls..setzt innerHTML
+{{firstName}}   ==   <span ng-bind="firstName"></span>
+..das muss so in $scope-obj enthalten sein
+synchronization between the model and the view.
+
+---- form
+ganz normal <form>...
+
+
+---- ui-
+<div ui-dynui></div>
+...dynui ist eine directive
+
+
+---- ng-model
+binding an diese 4 input controls (input, select, (radio)button, textarea)
+gebrauche html5 type="number"...
+dasmodel muss nicht vorher definiert sein...wächst selber
+immer 2 way bind ... ev noch mit @
+Form-State + Input-State: invalid, dirty, touched, error
+--{{myForm.myAddress.$valid}}
+
+
+---- directive
+ang hat schon viele built-in z.B:
+-- ng-repeat="x in names"
+selber machen:  app.directive("myDi", function() {..ctor dann brauchen mit:  <myDi/>
+fügt automatisch css-klassen hinzu wie ng-invalid... die man stylen kann: <style> input.ng-invalid { background-color: lightblue;
+
+
+---- Filters
+z.B. grossb.: {{ lastName | uppercase }}
+oder: " | orderby.."
+beginnen mit pipe
+selber machen z.B: app.filter('myFormat',['hexafy', function(hexafy) {..
+
+
+
+---- Service
+function or object only for this app
+hat 30 built in... sie sind meist pendants zu bestehenden js Objekten/Funcs...z.B. window.setInterval... man sollte nicht mehr js dinger brauchen..
+z.B. $location
+oder $http.get("welcome.htm").then(function (response) {  $scope.myWelcome = response.data;
+selber machen z.B.: app.service('hexafy', function() {
+
+---- Event
+Für alle normalen js events gibt es ng -pendants z.B: <button ng-click="myFunction($event)">
+$event == browser's event object
+
+---- Include
+zum auslagern des html
+<div ng-include="'myTable.htm'"> 
+
+---- Animate
+angular-animate.js
+braucht: ng-app="ngAnimate" oder als dependency beim controller ctor
+ngAnimate add or removes css classes
+
+
+---- divers
+ng-... === data-ng-... (aber html ist valid)   
+es gibt ng-... für jquery show, hide, disable...
+
+
+---- route
+angular-route.js
+-das html wird dort reingeladen wo <ng-view> steht
+var app = angular.module("myApp", ["ngRoute"]);
+app.config(function($routeProvider) {
+    $routeProvider
+    .when("/", {
+        templateUrl : "main.htm"
+	controller : "londonCtrl"
+    })
+    .otherwise({..
+
+---- Filter
+https://docs.angularjs.org/api/ng/filter/filter
+...ist nicht comparator sondern expression
+
+<div class="row" ng-repeat="result in (inEntity | filter:filterFields).length / 4  | arrayFilter ">
+....ist das gleiche wie im JS...
+$scope.inEntity2 = $filter('filter')($scope.inEntity, $scope.filterFields);
+
+    $scope.filterFields = function (value) {
+      return true oder false;
+    };
+
+
+
+--------------------------------
+Mein ertes angular dings: C:\dev\csharp\DynUI\Edorex.DynUI\App\app\app\ivma
+
+man könnte so machen....
+    angular.module('app').controller("IvmaController", function($scope) {
+
+...aber wegen minifier (variablen-Namen verschwinden) und wegen JohnPapa soll man es so machen...
+    angular.module('app').controller('IvmaController', ['$scope', '$filter', IvmaController]);
+    function IvmaController($scope, $filter) {
+--------------------------------
+
+
+grunt serve verbose
+...zeigt auch watches
+
+
