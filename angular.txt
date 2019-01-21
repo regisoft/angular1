@@ -17,10 +17,14 @@ nvm list
 
 npm install
 npm start ... macht    ng serve
-CLI (==ng) is based on Webpack = bundle js, css usw.
+CLI (==ng) is based on Webpack = bundles js, css usw.
 ng serve -sucht-> angular.js -darin-> Main.ts -bootstrapModule-> app_module.ts -darin bootstrap-> app.component.ts (renders the rest)
 
 ng generate component gugus .... you have to put in a declarations in NgModules
+
+-----------------------from scratch
+ng new client
+npm install bootstrap in angular.js -> styles -> "node_modules/bootstrap/dist/css/bootstrap.min.css"
 
 
 
@@ -38,6 +42,17 @@ selector = custom-html-Tag-Name
 
 Application = tree of Components
 
+Erstellreihenfolge:
+Models -> Services -> Views
+Pulling data out of our components and into services helps a lot. 
+At least if services are the “owners” of our data
+ 
+Names:
+Klasse = ChatThreadComponent
+Filename = chat-thread.component.ts/html
+Selector = chat-thread 
+
+Zugriff auf DOM (ausserhalb):.. nativeElement.querySelector('.msg-container-base')
 
 
 ----------------------model
@@ -57,13 +72,13 @@ hat auch funcs wie voteUp()... wird dann auferufen von voteUp der Komponente
 [foo] In HTML == pass a value to the input named foo on that component
 [class.selected]="isSelected(myProduct)"    ....add the CSS class "selected" if isSelected(myProduct) returns true
 
-
-
 @Output() onProductSelected: EventEmitter<Product>;   In TS
 <button (click)="increase()">   binding the click output of the button  
 prinzipiell:    (output)="action()"
 EventEmitter== an object that helps you implement the Observer Pattern = 1. maintain a list of subscribers 2. publish events to them. / subscribe+emit ... angualr sbscribe selber
 this.onProductSelected.emit(product);
+
+(keydown.enter)="onEnter($event)"  .... onEnter(event: any): void { this.sendMessage(); event.preventDefault(); }
 
 @Output() results: EventEmitter<SearchResult[]> = new EventEmitter<SearchResult[]> ();
 
@@ -72,8 +87,8 @@ this.onProductSelected.emit(product);
 
 
 [(ngModel)] = 2 way bind ... Sollte heute nicht mehr geamcht werden..
-heute:  one-way data binding. That is, your data flows only down through components. If you need to make changes, you emit events that cause changes to happen “at the top” w
-
+heute:  one-way data binding. That is, your data flows only down through components. If you need to make changes, you emit events that cause changes to happen “at the top” 
+As long as the side-effects are kept local to the component... 2 way OK
 
 
 ----------------------binds...
@@ -92,16 +107,48 @@ anderes Bsp:
 addArticle(title: HTMLInputElement
 
 @HostBinding('attr.class') cssClass = 'row';     host is the element this component is attached to.  we’re able to configure our host element from within the component.
+@HostListener  this decorator allows a directive to listen to events on its host element.
+constructor(_elementRef: ElementRef) {  (_elementRef.nativeElement  ... Zugriff auf draussen
 
 
 
+-----------------------client side routing
+//something/#/about   ...das ist hash-based routing
+neu mit html 5 nicht mehr nötig... jetzt   history.pushState
+routes gebrauchen indem das in NgModule:  RouterModule.forRoot(
+x routes im gleichen Module
+basiert auf folgendem Provider:   { provide: LocationStrategy, ...
+ID in url entgegennehmen als constructor param:  private route: ActivatedRoute   ...dann auslesen in ngOnInit()... {  this.contractId = +this.route.snapshot.paramMap.get('id');
+queryParam in URL setzen von controller aus:   this.router.navigate(['search'], { queryParams: { query: query } }).then(_ => this.search() );
+canActivate: [ LoggedInGuard ]   als route params für Authentication... a form of user-experience and not one of security... Security muss auf Server
+
+[routerLink] ersetzt dann Inhalt von folgendem
+<router-outlet> where the contents of each route component will be rendered.
 
 
------------------------ts... js-reference
+
+-----------------------Lifecycle Hooks
+• OnInit
+• OnDestroy
+• DoCheck
+• OnChanges
+• AfterContentInit
+• AfterContentChecked
+• AfterViewInit
+• AfterViewChecked
+.... das ist abschliessend
+
+
+
+-----------------------ts typescript... js-reference
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-tsun ist REPL in command line für TS
- 
+https://www.typescriptlang.org/play/
 
+"tsun" ist REPL in command line für TS
+
+Mit folgendem kann man ts File im Ts-Node ausführen lassen:
+./node_modules/.bin/ts-node [filename]
+ 
 ES6 kann classes und Modules
 ts fügt types und annotations zu ES6 hinzu
 nach build ist alles ES5
@@ -109,6 +156,9 @@ nach build ist alles ES5
 backticks `   ist ES6 = multiline strings
 
 private geht auch
+Everything in a class is public if not specified. 
+
+Module == .NET namespaces
 
 this.articles.push(new Article(tit
 articles.sort((a: Article, b: Article) => b.votes - a.votes);   das ist ES6 (Fat arrow functions)... ananyome function lambda 
@@ -123,6 +173,15 @@ this.products = [];
 constructor(obj?: any) {
   this.id = obj && obj.id || null;
 
+Möglichst wenig in constructor... mehr in OnInit ... testable code, minimize the side effects of constructing an object
+
+constructor(public name: string ...= Shorthand direkt property
+    
+
+
+
+
+
 
 -----------------------Built-in Directives
 NgIf
@@ -132,6 +191,17 @@ NgClass
 NgFor
 NgNonBindable ...html.raw
 <pre> tag  für Data oder Code Darstellung
+
+-----------------------css und styling
+https://semantic-ui.com/modules/tab.html#/examples
+
+Bootstrap Sass kommt rein mit  "npm install bootstrap"
+in angular.js  refernezizeirt... "styles": ["src/styles.scss"  ],
+in styles.scss  ... im root referenziert es dann 
+
+https://loiane.com/2017/08/how-to-add-bootstrap-to-an-angular-cli-project/
+
+
 
 -----------------------Form
 https://angular.io/guide/forms-overview
@@ -174,6 +244,7 @@ ist special weil 2 way
  <input type="text" [formControl]="myForm.controls.sku">
 
 
+
 ----------------------DI Dependency Injection
 inject something by creating an argument in the constructor
 share a single instance of the B class across our whole app
@@ -182,8 +253,10 @@ export interface IPriceService {...}
 export class MockPriceService implements IPriceService {...}
 constructor(service: IPriceService...
 
-Angualr hat DependencRegistiry
- specify what is being injected and how it will be resolved
+Angualr hat DependencRegistiry .. braucht
+1. the token to use to refer this injectable dependency
+2. the way to inject the dependency
+
 
 @Injectable() Anotation... before export class...
 
@@ -199,20 +272,93 @@ Man kann die Injectibales auch auslagern in Klasse  und dann so in NgModule einb
 
 constructor(   @Inject(YOUTUBE_API_KEY) private apiKey:
 
+-----------------------REST http
+consume in core RestSharp:   https://github.com/restsharp/RestSharp/wiki/Getting-Started
+
+
 -----------------------observable rxjs
+Observables to structure our data is called Reactive Programming
+sind streams
+
+promises (nicht brauchen) emit a single value whereas streams emit many values
+callbacks sind noch älter als promises
+
+es pusht (nicht pull)
+Think of streams like a pipeline of operations over your data. You can subscribe to any part of your stream and even combine them to create new streams
+
+// a stream that publishes new messages only once ... Subject is a rxjs keyword ...supports “read/write”
+newMessages: Subject<Message> = new Subject<Message>();
+
+// a stream  ... BehaviorSubject == gleich wie Subject, aber stores the last value
+currentUser: Subject<User> = new BehaviorSubject<User>(null);
+
+// a stream that emits an array of the most up to date messages
+messages: Observable<Message[]>;
+
+this.bla.subscribe(this.foo);  ...foo listen on bla changes
+
+siehe auch EventEmitter
+
 .subscribe(
         (results: SearchResult[]) => { // on sucesss ... this.loading.emit(false);
         (err: any) => { // on error
         () => { // on completion
-        
-        
+
+.publishReplay(1).refCount();  streams aren’t shareable by default. if one subscriber reads a value... kein anderer kann mehr lesen... Mit dem umgehen
+
+.next(u);  == push a new value to the stream
+
+.scan()  ...it runs the function for each element  (wie reduce) ... creates a new stream.
+
+.map() ..it runs the function once for each item in the stream and emits the return value of the function.
+
+.combineLates() ...2 streams zusammneführen
+
+
+
+
+heroes$: Observable<Hero[]>;
+   
+Underscore.js...   functional operators auf Array z.B. 
+_.sortBy(threads, (t: Thread) => t.lastMessage.sentAt).reverse();
+_.map
+
+----------------------redux
+immutable, central store of state
+
+state = ALL data is in a single data structure .. for the whole app
+store = holds the state.. running the reducer and then keeping the new state
+action = userklicks... interface Action { actionType: string; payload?: any; }
+reducer = pure function...  combining the old state and the action ..= new state ... interface Reducer<T> { (state: T, action: Action): T; }  Darf alten state nicht verändern.  ...  Object.assign({} ...  kopiert Objekt in neues
+
+we create actions which instruct the reducer on how to generate a new state
+
+Redux itself is powerful enough to use in our applications without Observables
+
+import { Store } from 'redux';  .. ist ein node_module
+import { AppStore } from './app.store';
+
+Redux Dev Tools - Chrome Extension  (s.376)
+
+in den sub components hat es weiterrhin variablen
+...aber im constructor subscriped er sich beim store... und führt seine Variablen dann nach, wenn store ändert.
+...oder führt store nach, wenn etwas ändert ... this.store.dispatch(
+
+
+----------------------test
+npm run test
+   
+Jasmine-  we can describe our tests and their expectations. 
+Karma - Ausführungsumgebung wie Browser
+
 
 ----------------------build
 ng build --prod
 ng build --target=production --base-href /
 
 
-dann in dist ordner "now"
+dann in dist ordner wechseln 
+dort in cmd "now" eingeben... das deployt
 https://zeit.co/dashboard
 
 https://dist-5j0b6ivjn.now.sh/
@@ -220,7 +366,7 @@ https://dist-5j0b6ivjn.now.sh/
 
 
 
-=================================================================================================================================================
+================================================================================================================================================= OLD Angular 1
 ------------------------------------------------------------------------------------------------OLD (mit mafl)
 https://docs.angularjs.org/guide/directive
 http://www.w3schools.com/angular/angular_sql.asp

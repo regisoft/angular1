@@ -14,10 +14,13 @@ interface AddMessageAction extends Action {
 
 interface DeleteMessageAction extends Action {
   index: number;
-}
+}  
 
 let reducer: Reducer<AppState> =
   (state: AppState, action: Action): AppState => {
+
+    console.log('** process action: ', action);
+
   switch (action.type) {
   case 'ADD_MESSAGE':
     return {
@@ -40,7 +43,13 @@ let reducer: Reducer<AppState> =
 
 // create a new store
 let store = new Store<AppState>(reducer, { messages: [] });
-console.log(store.getState()); // -> { messages: [] }
+
+let unsubscribe = store.subscribe(() => {
+  console.log('** store changed: ', store.getState());
+    });
+ 
+
+//console.log(store.getState()); // -> { messages: [] }
 
 store.dispatch({
   type: 'ADD_MESSAGE',
@@ -57,7 +66,7 @@ store.dispatch({
   message: 'Has it really got a team of snow white horses?'
 } as AddMessageAction);
 
-console.log(store.getState());
+//console.log(store.getState());
 // -> 
 // { messages:
 //    [ 'Would you say the fringe was made of silk?',
@@ -69,7 +78,7 @@ store.dispatch({
   index: 1
 } as DeleteMessageAction);
 
-console.log(store.getState());
+//console.log(store.getState());
 // -> 
 // { messages:
 //    [ 'Would you say the fringe was made of silk?',
@@ -80,6 +89,6 @@ store.dispatch({
   index: 0
 } as DeleteMessageAction);
 
-console.log(store.getState());
+//console.log(store.getState());
 // ->
 // { messages: [ 'Has it really got a team of snow white horses?' ] }

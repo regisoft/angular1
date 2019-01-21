@@ -24,6 +24,7 @@ describe('MessagesService', () => {
     const messagesService: MessagesService = new MessagesService();
 
     // listen to each message indivdually as it comes in
+    debugger;
     messagesService.newMessages
       .subscribe( (message: Message) => {
         console.log('=> newMessages: ' + message.text);
